@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
-import armor_finder_constants
+import armor_finder_constants as constants
+import request_info as ri
 
 """
 ===============================================================
@@ -35,7 +36,7 @@ Algorithm
 
 
 def main():
-	print("Hello!")
+	ri.request_manifest();
 
 if __name__ == "__main__":
 	main()
