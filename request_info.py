@@ -28,7 +28,7 @@ def request_manifest():
     
     """
     up_to_date = True # used to check if the manifest is up to date
-    request_url = f"{constants.BASE} + {constants.MANIFEST_URL}" # endpoint for fetching the Bungie API manifest
+    request_url = f"{constants.BASE}{constants.MANIFEST_URL}" # endpoint for fetching the Bungie API manifest
 
     try:
         response = requests.get(request_url, headers=constants.REQUEST_HEADERS, timeout=10)
