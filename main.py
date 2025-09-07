@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import armor_finder_constants
 import os
 import requests
 import json
@@ -33,8 +34,6 @@ Algorithm
 				- add it to the user's armor pool
 ===============================================================
 """
-
-
 
 
 def main():
