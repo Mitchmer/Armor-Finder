@@ -1,8 +1,5 @@
 from dotenv import load_dotenv
 import armor_finder_constants
-import os
-import requests
-import json
 
 """
 ===============================================================
@@ -32,6 +29,7 @@ Algorithm
 		a. Go through each "archetype":
 			i. Find the highest "base stat total":
 				- add it to the user's armor pool
+				- TODO: tier 5 "tuning"
 ===============================================================
 """
 
