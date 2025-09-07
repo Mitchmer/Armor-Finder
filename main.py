@@ -36,7 +36,27 @@ Algorithm
 
 
 def main():
-	ri.request_manifest();
+    #	1. query Bungie API
+	#	- log in if needed?
+	
+
+	#2. check manifest for new information
+	#	- if new, update the manifest and the "item definition"
+	#		json files with the newest files
+	
+    # load manifest and version flag
+	manifest, version_was_updated = ri.request_manifest();
+
+	#3. pull user's information
+	#4. TODO: enable user to customize the sets they want
+	#	- for now, just pull from Techsec
+	#5. TODO: enable user to customize the archetypes they want
+	#	- for now, just use "Gunner" and "Paragon" archetypes
+	#6. For each armor slot (helmet, gauntlets, etc):
+	#	a. Go through each "archetype":
+	#		i. Find the highest "base stat total":
+	#			- add it to the user's armor pool
+	#			- TODO: tier 5 "tuning"
 
 if __name__ == "__main__":
 	main()
