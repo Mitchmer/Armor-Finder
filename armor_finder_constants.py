@@ -18,6 +18,20 @@ MEMBERSHIP_ID = os.getenv("MEMBERSHIP_ID") # Membership ID for current profile
 MEMBERSHIP_TYPE = os.getenv("MEMBERSHIP_TYPE") # Membership type for current profile
 
 #**********************
+# JSON key/values
+#**********************
+"""
+Manifest Structure
+
+{ Response : {
+        { version : "version_string" }
+    }
+}
+"""
+RESPONSE_JSON_KEY = "Response"
+VERSION_JSON_KEY = "version"
+
+#**********************
 # Bungie API endpoints
 #**********************
 
@@ -37,5 +51,5 @@ PROFILE_URL = f"/Platform/Destiny2/{MEMBERSHIP_TYPE}/Profile/{MEMBERSHIP_ID}/"
 # Stores the last manifest pulled
 MANIFEST_FILENAME = "Manifest.json"
 
- #Stores a "Lite" version of item info. *** STILL VERY LARGE ***
+# Stores a "Lite" version of item info. *** STILL VERY LARGE ***
 INVENTORY_ITEM_LITE_DEFINITION_FILENAME = "DestinyInventoryItemLiteDefinition.json"

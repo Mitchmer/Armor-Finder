@@ -3,9 +3,6 @@ import armor_finder_constants as constants
 import os
 import json
 
-RESPONSE_JSON_KEY = "Response"
-VERSION_JSON_KEY = "version"
-
 def request_manifest():
     """
     Requests the Bungie API manifest. This also checks whether or not
@@ -18,14 +15,6 @@ def request_manifest():
         when concatenated they form a complete API request for the
         manifest.
     :return: returns a JSON object for query.
-    
-    Manifest structure:
-	
-    { Response : {
-			{ version : "version_string" }
-    	}
-    }
-    
     """
     up_to_date = True # used to check if the manifest is up to date
     request_url = f"{constants.BASE}{constants.MANIFEST_URL}" # endpoint for fetching the Bungie API manifest
@@ -44,11 +33,11 @@ def request_manifest():
                 print("Manifest loaded from local storage")
                 
             # if the local manifest version is not equal to the remote version 
-            if local_manifest.get(RESPONSE_JSON_KEY, {}).get(VERSION_JSON_KEY) != remote_manifest.get(RESPONSE_JSON_KEY, {}).get(VERSION_JSON_KEY):
+            if local_manifest.get(constants.RESPONSE_JSON_KEY, {}).get(constants.VERSION_JSON_KEY) != remote_manifest.get(constants.RESPONSE_JSON_KEY, {}).get(constants.VERSION_JSON_KEY):
                 # print version differences
                 print(f"Local manifest version diff from remote. Updating manifest")
-                print(f"Local version: {local_manifest.get(RESPONSE_JSON_KEY, {}).get(VERSION_JSON_KEY)}")
-                print(f"Remote version: {remote_manifest.get(RESPONSE_JSON_KEY, {}).get(VERSION_JSON_KEY)}")
+                print(f"Local version: {local_manifest.get(constants.RESPONSE_JSON_KEY, {}).get(constants.VERSION_JSON_KEY)}")
+                print(f"Remote version: {remote_manifest.get(constants.RESPONSE_JSON_KEY, {}).get(constants.VERSION_JSON_KEY)}")
 
                 # open file for writing
                 with open(constants.MANIFEST_FILENAME, "w") as f:
