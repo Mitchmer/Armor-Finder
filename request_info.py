@@ -2,6 +2,89 @@ import requests
 import armor_finder_constants as constants
 import os
 import json
+from flask import Flask, request, redirect # Flask web framework utilities
+import webbrowser # To automatically open the login page
+
+app = Flask(__name__)
+
+def begin_app():
+    print("➡ Starting local server on https://localhost:5000 ...")
+    print("➡ Opening browser to Bungie login page ...")
+
+    # Open the root route in the browser (which redirects to Bungie login)
+    webbrowser.open("https://localhost:5000")
+
+    # Run Flask with HTTPS (adhoc self-signed certificate)
+    app.run(ssl_context="adhoc", port=5000)
+
+@app.route("/")
+def index():
+    """
+    Root route: immediately redirects the user to Bungie's OAuth authorization page.
+    Visiting https://localhost:5000 in a browser kicks off the login flow.
+    """
+    return redirect(constants.AUTH_URL)
+
+
+@app.route("/callback")
+def callback():
+    """
+    Callback route: Bungie redirects here after user login and consent.
+    The URL will contain ?code=...&state=...
+    """
+    # Extract query parameters from Bungie's redirect
+    code = request.args.get("code")
+    state = request.args.get("state")
+
+    # Verify the returned state matches what we generated earlier
+    if state != constants.STATE:
+        return "State mismatch! Possible CSRF attack.", 400
+
+    # Verify we actually got an authorization code
+    if not code:
+        return "No authorization code received.", 400
+
+    print(f"\n✅ Received authorization code: {code}")
+
+    # Exchange the authorization code for access/refresh tokens
+    token_response = requests.post(
+        constants.TOKEN_URL,
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "client_id": constants.CLIENT_ID
+            # TODO "client_secret": CLIENT_SECRET,       # Remove if using Public client
+        },
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    tokens = token_response.json()
+    print("\n=== Token Response ===")
+    print(tokens)
+
+    # Extract the access token from the response
+    access_token = tokens.get("access_token")
+
+    if access_token:
+        # Example API call using the new access token
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "X-API-Key": constants.API_KEY,
+        }
+        api_response = requests.get(
+            "https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/",
+            headers=headers,
+        )
+        print("\n=== Sample API Response ===")
+        print(api_response.json())
+
+        # >>> This is where you can call your own functions instead of (or in addition to) the sample API call <<<
+        # For example:
+        # my_app_logic(tokens, api_response.json())
+
+    # Send a response to the browser so the user knows we're done
+    return "<h1>Authorization complete. You can close this tab.</h1>"
+
 
 def request_manifest():
     """
@@ -20,7 +103,8 @@ def request_manifest():
     request_url = f"{constants.BASE}{constants.MANIFEST_URL}" # endpoint for fetching the Bungie API manifest
 
     try:
-        response = requests.get(request_url, headers=constants.REQUEST_HEADERS, timeout=10)
+        headers = { "X-API-Key" : constants.API_KEY }
+        response = requests.get(request_url, headers=headers, timeout=10)
         response.raise_for_status()
         remote_manifest = response.json()
 
@@ -64,3 +148,5 @@ def request_manifest():
 
     # return the manifest (whether new or old) and whether or not the version was up-to-date
     return local_manifest, up_to_date
+
+

@@ -1,6 +1,7 @@
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import armor_finder_constants as constants
 import request_info as ri
+
 
 """
 ===============================================================
@@ -45,7 +46,9 @@ def main():
 	#		json files with the newest files
 	
     # load manifest and version flag
-	manifest, version_was_updated = ri.request_manifest();
+    manifest, version_was_updated = ri.request_manifest()
+    print(f"{constants.STATE}")
+    ri.begin_app()
 
 	#3. pull user's information
 	#4. TODO: enable user to customize the sets they want
@@ -58,5 +61,7 @@ def main():
 	#			- add it to the user's armor pool
 	#			- TODO: tier 5 "tuning"
 
+
+
 if __name__ == "__main__":
-	main()
+    main()

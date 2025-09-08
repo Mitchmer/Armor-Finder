@@ -1,5 +1,8 @@
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import os
+import secrets
+
+load_dotenv(find_dotenv()) # load the .env file
 
 #**********************************************
 # GLOBAL CONSTANTS
@@ -9,13 +12,31 @@ import os
 # API VARS
 #******************************
 
+# Base endpoint for any request
+BASE = "https://www.bungie.net"	
+
 # Key variables
 API_KEY = os.getenv("BUNGIE_API_KEY") # Needed for API requests
-REQUEST_HEADERS = {"X-API-Key": API_KEY} # Also required in API requests
+#REQUEST_HEADERS = {"X-API-Key": API_KEY} # Also required in API requests
 
 # User-specific
 MEMBERSHIP_ID = os.getenv("MEMBERSHIP_ID") # Membership ID for current profile
 MEMBERSHIP_TYPE = os.getenv("MEMBERSHIP_TYPE") # Membership type for current profile
+
+# OAuth Requests
+STATE = secrets.token_urlsafe(16)
+CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")
+CLIENT_SECRET = ""
+AUTH_URL = f"{BASE}/en/oauth/authorize?client_id={CLIENT_ID}&response_type=code&state={STATE}"
+REDIRECT_PORT = 5000
+REDIRECT_URL = f"https://localhost:{REDIRECT_PORT}/callback"
+TOKEN_URL = f"{BASE}/platform/app/oauth/token"
+
+# Endpoint for Bungie manifest
+MANIFEST_URL = "/Platform/Destiny2/Manifest/" 
+
+# Constructs a request endpoint for the user's profile 
+PROFILE_URL = f"/Platform/Destiny2/{MEMBERSHIP_TYPE}/Profile/{MEMBERSHIP_ID}/" 
 
 #**********************
 # JSON key/values
@@ -30,19 +51,6 @@ Manifest Structure
 """
 RESPONSE_JSON_KEY = "Response"
 VERSION_JSON_KEY = "version"
-
-#**********************
-# Bungie API endpoints
-#**********************
-
-# Base endpoint for any request
-BASE = "https://www.bungie.net"	
-
-# Endpoint for Bungie manifest
-MANIFEST_URL = "/Platform/Destiny2/Manifest/" 
-
-# Constructs a request endpoint for the user's profile 
-PROFILE_URL = f"/Platform/Destiny2/{MEMBERSHIP_TYPE}/Profile/{MEMBERSHIP_ID}/" 
 
 #******************************
 # JSON Paths
