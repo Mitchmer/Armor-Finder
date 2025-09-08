@@ -8,14 +8,59 @@ import webbrowser # To automatically open the login page
 app = Flask(__name__)
 
 def begin_app():
-    print("➡ Starting local server on https://localhost:5000 ...")
+    print(f"➡ Starting local server on {constants.REDIRECT_DOMAIN} ...")
     print("➡ Opening browser to Bungie login page ...")
 
-    # Open the root route in the browser (which redirects to Bungie login)
-    webbrowser.open("https://localhost:5000")
+    # test if token has expired
+    response = test_response()
+    if response is False:
+        print("Token expired. Requesting new token")
+        # Open the root route in the browser (which redirects to Bungie login)
+        webbrowser.open(f"{constants.REDIRECT_DOMAIN}")
 
-    # Run Flask with HTTPS (adhoc self-signed certificate)
-    app.run(ssl_context="adhoc", port=5000)
+        # Run Flask with HTTPS (adhoc self-signed certificate)
+        app.run(ssl_context="adhoc", port=constants.REDIRECT_PORT)
+    else:
+        # TODO: BEGIN THE REQUESTENING AND THE PARSENING
+        print("BEGIN THE REQUESTENING AND THE PARSENING") 
+
+
+def request_memberships(token):
+    headers = {
+        "Authorization" : f"Bearer {token.get("access_token")}",
+        "X-API-Key" : constants.API_KEY     
+    }
+    membership_response = requests.get(
+        f"{constants.BASE}{constants.MEMBERSHIP_URL}",
+        headers=headers,
+        timeout=10
+    )
+
+    # check response for expired token
+    if (membership_response.ok): # status_code is less than 400
+        # then the rest of the stuff happens
+
+        membership = membership_response.json()
+
+        print("***** MEMBERSHIP RESPONSE ******")
+        print(membership_response)
+        print(membership)
+        with open(constants.MEMBERSHIP_FILENAME, "w") as f:
+            json.dump(membership, f)
+            print("Saved membership to local")
+
+    return membership_response.ok
+
+
+def test_response():
+    test_successful = False
+    if (os.path.exists(constants.TOKEN_FILENAME)):
+        with open(constants.TOKEN_FILENAME, "r") as f:
+            token = json.load(f)
+            print("Loaded local token")
+        test_successful = request_memberships(token) 
+    return test_successful
+
 
 @app.route("/")
 def index():
@@ -58,25 +103,18 @@ def callback():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
 
-    tokens = token_response.json()
-    print("\n=== Token Response ===")
-    print(tokens)
+    token = token_response.json()
+    with open(constants.TOKEN_FILENAME, "w") as f:
+        json.dump(token, f)
+        print("Saved token to local")
+    
+    #print("\n=== Token Response ===")
+    #print(tokens)
 
     # Extract the access token from the response
-    access_token = tokens.get("access_token")
+    access_token = token.get("access_token")
 
-    if access_token:
-        # Example API call using the new access token
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "X-API-Key": constants.API_KEY,
-        }
-        api_response = requests.get(
-            "https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/",
-            headers=headers,
-        )
-        print("\n=== Sample API Response ===")
-        print(api_response.json())
+    #if access_token:
 
         # >>> This is where you can call your own functions instead of (or in addition to) the sample API call <<<
         # For example:

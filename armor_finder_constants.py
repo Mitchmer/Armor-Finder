@@ -29,14 +29,16 @@ CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")
 CLIENT_SECRET = ""
 AUTH_URL = f"{BASE}/en/oauth/authorize?client_id={CLIENT_ID}&response_type=code&state={STATE}"
 REDIRECT_PORT = 5000
-REDIRECT_URL = f"https://localhost:{REDIRECT_PORT}/callback"
+REDIRECT_DOMAIN = f"https://localhost:{REDIRECT_PORT}"
+REDIRECT_URL = f"{REDIRECT_DOMAIN}/callback"
 TOKEN_URL = f"{BASE}/platform/app/oauth/token"
 
 # Endpoint for Bungie manifest
 MANIFEST_URL = "/Platform/Destiny2/Manifest/" 
 
 # Constructs a request endpoint for the user's profile 
-PROFILE_URL = f"/Platform/Destiny2/{MEMBERSHIP_TYPE}/Profile/{MEMBERSHIP_ID}/" 
+MEMBERSHIP_URL = "/Platform/User/GetMembershipsForCurrentUser/"
+
 
 #**********************
 # JSON key/values
@@ -61,3 +63,6 @@ MANIFEST_FILENAME = "Manifest.json"
 
 # Stores a "Lite" version of item info. *** STILL VERY LARGE ***
 INVENTORY_ITEM_LITE_DEFINITION_FILENAME = "DestinyInventoryItemLiteDefinition.json"
+
+TOKEN_FILENAME = "token.json"
+MEMBERSHIP_FILENAME = "membership.json"
